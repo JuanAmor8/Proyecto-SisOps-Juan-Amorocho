@@ -453,7 +453,10 @@ opcion5_backup() {
         nombre_archivo=$(basename "$archivo")
         ruta_relativa="${archivo#$directorio_destino/}"
         tamano_bytes=$(stat -c%s "$archivo" 2>/dev/null || stat -f%z "$archivo" 2>/dev/null)
-        tamano_mb=$(echo "scale=2; $tamano_bytes / 1024 / 1024" | bc)
+        if [ -z "$tamano_bytes" ]; then
+            tamano_bytes=0
+        fi
+        tamano_mb=$(echo "scale=2; $tamano_bytes / 1024 / 1024" | bc 2>/dev/null || echo "0")
         fecha_mod=$(stat -c%y "$archivo" 2>/dev/null | cut -d'.' -f1 || stat -f%Sm "$archivo" 2>/dev/null)
         
         # Agregar a catalogo TXT
@@ -473,15 +476,23 @@ opcion5_backup() {
     done
     
     # Contar archivos y calcular tamano total
-    total_archivos=$(find "$directorio_destino" -type f ! -name "catalogo_backup.txt" ! -name "catalogo_backup.csv" | wc -l)
-    tamano_total=$(find "$directorio_destino" -type f ! -name "catalogo_backup.txt" ! -name "catalogo_backup.csv" -exec stat -c%s {} + 2>/dev/null | awk '{sum+=$1} END {print sum}')
+    total_archivos=$(find "$directorio_destino" -type f ! -name "catalogo_backup.txt" ! -name "catalogo_backup.csv" 2>/dev/null | wc -l)
     
-    if [ -z "$tamano_total" ]; then
+    # Calcular tamano total (compatible con Linux y BSD/macOS)
+    if stat -c%s "$directorio_destino" &>/dev/null; then
+        # Sistema GNU (Linux)
+        tamano_total=$(find "$directorio_destino" -type f ! -name "catalogo_backup.txt" ! -name "catalogo_backup.csv" -exec stat -c%s {} + 2>/dev/null | awk '{sum+=$1} END {print sum}')
+    else
+        # Sistema BSD (macOS y otros)
+        tamano_total=$(find "$directorio_destino" -type f ! -name "catalogo_backup.txt" ! -name "catalogo_backup.csv" -exec stat -f%z {} + 2>/dev/null | awk '{sum+=$1} END {print sum}')
+    fi
+    
+    if [ -z "$tamano_total" ] || [ "$tamano_total" = "" ]; then
         tamano_total=0
     fi
     
-    tamano_total_mb=$(echo "scale=2; $tamano_total / 1024 / 1024" | bc)
-    tamano_total_gb=$(echo "scale=2; $tamano_total / 1024 / 1024 / 1024" | bc)
+    tamano_total_mb=$(echo "scale=2; $tamano_total / 1024 / 1024" | bc 2>/dev/null || echo "0")
+    tamano_total_gb=$(echo "scale=2; $tamano_total / 1024 / 1024 / 1024" | bc 2>/dev/null || echo "0")
     
     # Agregar resumen al catalogo TXT
     {
