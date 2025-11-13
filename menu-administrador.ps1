@@ -1,47 +1,45 @@
-#==============================================================================
-# HERRAMIENTA DE ADMINISTRACIÓN DE DATA CENTER - PowerShell
+# ==============================================================================
+# HERRAMIENTA DE ADMINISTRACION DE DATA CENTER - PowerShell
 # Sistema Operativo: Windows
-# Autor: Administrador de Sistemas
-# Descripción: Menú interactivo con 5 opciones para administración de servidores
-#==============================================================================
+# Autor: Juan Amorocho
+# Descripcion: Menu interactivo con 5 opciones para administracion de servidores
+# ==============================================================================
 
-# Configuración de colores y formato
-$host.UI.RawUI.BackgroundColor = "Black"
-$host.UI.RawUI.ForegroundColor = "White"
+# Configuracion inicial
 Clear-Host
 
-#==============================================================================
-# FUNCIÓN: MOSTRAR MENÚ PRINCIPAL
-#==============================================================================
+# ==============================================================================
+# FUNCION: MOSTRAR MENU PRINCIPAL
+# ==============================================================================
 function Mostrar-Menu {
     Clear-Host
-    Write-Host "╔════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║     HERRAMIENTA DE ADMINISTRACIÓN DE DATA CENTER - v1.0       ║" -ForegroundColor Cyan
-    Write-Host "╚════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host "================================================================" -ForegroundColor Cyan
+    Write-Host "     HERRAMIENTA DE ADMINISTRACION DE DATA CENTER - v1.0       " -ForegroundColor Cyan
+    Write-Host "================================================================" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "  [1] Usuarios del sistema y último login" -ForegroundColor Yellow
-    Write-Host "  [2] Información de discos y filesystems" -ForegroundColor Yellow
-    Write-Host "  [3] Top 10 archivos más grandes" -ForegroundColor Yellow
+    Write-Host "  [1] Usuarios del sistema y ultimo login" -ForegroundColor Yellow
+    Write-Host "  [2] Informacion de discos y filesystems" -ForegroundColor Yellow
+    Write-Host "  [3] Top 10 archivos mas grandes" -ForegroundColor Yellow
     Write-Host "  [4] Memoria RAM y Swap en uso" -ForegroundColor Yellow
     Write-Host "  [5] Backup de directorio a USB" -ForegroundColor Yellow
     Write-Host "  [0] Salir" -ForegroundColor Red
     Write-Host ""
-    Write-Host "╚════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host "================================================================" -ForegroundColor Cyan
     Write-Host ""
 }
 
-#==============================================================================
-# OPCIÓN 1: USUARIOS Y ÚLTIMO LOGIN
-#==============================================================================
+# ==============================================================================
+# OPCION 1: USUARIOS Y ULTIMO LOGIN
+# ==============================================================================
 function Opcion1-Usuarios {
     Clear-Host
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Green
-    Write-Host "  OPCIÓN 1: USUARIOS DEL SISTEMA Y ÚLTIMO LOGIN" -ForegroundColor Green
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Green
+    Write-Host "================================================================" -ForegroundColor Green
+    Write-Host "  OPCION 1: USUARIOS DEL SISTEMA Y ULTIMO LOGIN" -ForegroundColor Green
+    Write-Host "================================================================" -ForegroundColor Green
     Write-Host ""
     
     try {
-        Write-Host "Obteniendo información de usuarios..." -ForegroundColor Yellow
+        Write-Host "Obteniendo informacion de usuarios..." -ForegroundColor Yellow
         Write-Host ""
         
         # Obtener todos los usuarios locales
@@ -53,8 +51,7 @@ function Opcion1-Usuarios {
         foreach ($usuario in $usuarios) {
             $ultimoLogin = "Nunca"
             
-            # Intentar obtener el último login desde el registro de eventos
-            # EventID 4624 = Login exitoso
+            # Intentar obtener el ultimo login desde el registro de eventos
             try {
                 $loginEvent = Get-WinEvent -FilterHashtable @{
                     LogName = 'Security'
@@ -67,7 +64,7 @@ function Opcion1-Usuarios {
                     $ultimoLogin = $loginEvent.TimeCreated.ToString("dd/MM/yyyy HH:mm:ss")
                 }
             } catch {
-                # Si no se puede acceder al log de seguridad, usar información del usuario
+                # Si no se puede acceder al log de seguridad, usar informacion del usuario
                 if ($usuario.LastLogon) {
                     $ultimoLogin = $usuario.LastLogon.ToString("dd/MM/yyyy HH:mm:ss")
                 }
@@ -76,8 +73,8 @@ function Opcion1-Usuarios {
             $resultados += [PSCustomObject]@{
                 'Usuario' = $usuario.Name
                 'Nombre Completo' = if ($usuario.FullName) { $usuario.FullName } else { "N/A" }
-                'Habilitado' = if ($usuario.Enabled) { "Sí" } else { "No" }
-                'Último Login' = $ultimoLogin
+                'Habilitado' = if ($usuario.Enabled) { "Si" } else { "No" }
+                'Ultimo Login' = $ultimoLogin
             }
         }
         
@@ -88,7 +85,7 @@ function Opcion1-Usuarios {
         Write-Host "Total de usuarios encontrados: $($resultados.Count)" -ForegroundColor Cyan
         
     } catch {
-        Write-Host "ERROR: No se pudo obtener información de usuarios." -ForegroundColor Red
+        Write-Host "ERROR: No se pudo obtener informacion de usuarios." -ForegroundColor Red
         Write-Host "Detalle: $($_.Exception.Message)" -ForegroundColor Red
     }
     
@@ -97,21 +94,21 @@ function Opcion1-Usuarios {
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-#==============================================================================
-# OPCIÓN 2: INFORMACIÓN DE DISCOS Y FILESYSTEMS
-#==============================================================================
+# ==============================================================================
+# OPCION 2: INFORMACION DE DISCOS Y FILESYSTEMS
+# ==============================================================================
 function Opcion2-Discos {
     Clear-Host
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Green
-    Write-Host "  OPCIÓN 2: INFORMACIÓN DE DISCOS Y FILESYSTEMS" -ForegroundColor Green
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Green
+    Write-Host "================================================================" -ForegroundColor Green
+    Write-Host "  OPCION 2: INFORMACION DE DISCOS Y FILESYSTEMS" -ForegroundColor Green
+    Write-Host "================================================================" -ForegroundColor Green
     Write-Host ""
     
     try {
-        Write-Host "Obteniendo información de discos..." -ForegroundColor Yellow
+        Write-Host "Obteniendo informacion de discos..." -ForegroundColor Yellow
         Write-Host ""
         
-        # Obtener información de volúmenes
+        # Obtener informacion de volumenes
         $volumenes = Get-Volume | Where-Object { $_.DriveLetter -ne $null -and $_.Size -gt 0 }
         
         # Crear array para resultados
@@ -126,37 +123,39 @@ function Opcion2-Discos {
             $resultados += [PSCustomObject]@{
                 'Disco' = "$($vol.DriveLetter):"
                 'Etiqueta' = if ($vol.FileSystemLabel) { $vol.FileSystemLabel } else { "Sin etiqueta" }
-                'Sistema de Archivos' = $vol.FileSystem
-                'Tamaño Total (Bytes)' = "{0:N0}" -f $tamanoBytes
-                'Tamaño Total (GB)' = [math]::Round($tamanoBytes / 1GB, 2)
-                'Espacio Usado (Bytes)' = "{0:N0}" -f $usadoBytes
-                'Espacio Libre (Bytes)' = "{0:N0}" -f $libreBytes
-                'Espacio Libre (GB)' = [math]::Round($libreBytes / 1GB, 2)
-                '% Libre' = "$porcentajeLibre%"
+                'FileSystem' = $vol.FileSystem
+                'Total_Bytes' = $tamanoBytes
+                'Total_GB' = [math]::Round($tamanoBytes / 1GB, 2)
+                'Usado_Bytes' = $usadoBytes
+                'Libre_Bytes' = $libreBytes
+                'Libre_GB' = [math]::Round($libreBytes / 1GB, 2)
+                'Porcentaje_Libre' = "$porcentajeLibre%"
             }
         }
         
-        # Mostrar resultados
-        $resultados | Format-Table -Property 'Disco', 'Etiqueta', 'Sistema de Archivos', 'Tamaño Total (GB)', 'Espacio Libre (GB)', '% Libre' -AutoSize
+        # Mostrar resultados en tabla resumida
+        Write-Host "RESUMEN DE DISCOS:" -ForegroundColor Cyan
+        Write-Host ""
+        $resultados | Format-Table -Property Disco, Etiqueta, FileSystem, Total_GB, Libre_GB, Porcentaje_Libre -AutoSize
         
         Write-Host ""
-        Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Cyan
-        Write-Host "INFORMACIÓN DETALLADA EN BYTES:" -ForegroundColor Cyan
-        Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+        Write-Host "================================================================" -ForegroundColor Cyan
+        Write-Host "INFORMACION DETALLADA EN BYTES:" -ForegroundColor Cyan
+        Write-Host "================================================================" -ForegroundColor Cyan
         
         foreach ($res in $resultados) {
             Write-Host ""
             Write-Host "Disco: $($res.Disco) - $($res.Etiqueta)" -ForegroundColor Yellow
-            Write-Host "  Tamaño Total: $($res.'Tamaño Total (Bytes)') bytes" -ForegroundColor White
-            Write-Host "  Espacio Libre: $($res.'Espacio Libre (Bytes)') bytes" -ForegroundColor Green
-            Write-Host "  Espacio Usado: $($res.'Espacio Usado (Bytes)') bytes" -ForegroundColor Magenta
+            Write-Host "  Tamano Total: $($res.Total_Bytes) bytes" -ForegroundColor White
+            Write-Host "  Espacio Libre: $($res.Libre_Bytes) bytes" -ForegroundColor Green
+            Write-Host "  Espacio Usado: $($res.Usado_Bytes) bytes" -ForegroundColor Magenta
         }
         
         Write-Host ""
         Write-Host "Total de discos encontrados: $($resultados.Count)" -ForegroundColor Cyan
         
     } catch {
-        Write-Host "ERROR: No se pudo obtener información de discos." -ForegroundColor Red
+        Write-Host "ERROR: No se pudo obtener informacion de discos." -ForegroundColor Red
         Write-Host "Detalle: $($_.Exception.Message)" -ForegroundColor Red
     }
     
@@ -165,14 +164,14 @@ function Opcion2-Discos {
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-#==============================================================================
-# OPCIÓN 3: TOP 10 ARCHIVOS MÁS GRANDES
-#==============================================================================
+# ==============================================================================
+# OPCION 3: TOP 10 ARCHIVOS MAS GRANDES
+# ==============================================================================
 function Opcion3-ArchivosGrandes {
     Clear-Host
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Green
-    Write-Host "  OPCIÓN 3: TOP 10 ARCHIVOS MÁS GRANDES" -ForegroundColor Green
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Green
+    Write-Host "================================================================" -ForegroundColor Green
+    Write-Host "  OPCION 3: TOP 10 ARCHIVOS MAS GRANDES" -ForegroundColor Green
+    Write-Host "================================================================" -ForegroundColor Green
     Write-Host ""
     
     try {
@@ -182,7 +181,8 @@ function Opcion3-ArchivosGrandes {
         Write-Host "Discos disponibles:" -ForegroundColor Yellow
         foreach ($disco in $discos) {
             $etiqueta = if ($disco.FileSystemLabel) { $disco.FileSystemLabel } else { "Sin etiqueta" }
-            Write-Host "  [$($disco.DriveLetter):] - $etiqueta - $([math]::Round($disco.Size / 1GB, 2)) GB" -ForegroundColor Cyan
+            $tamanoGB = [math]::Round($disco.Size / 1GB, 2)
+            Write-Host "  [$($disco.DriveLetter):] - $etiqueta - $tamanoGB GB" -ForegroundColor Cyan
         }
         
         Write-Host ""
@@ -192,23 +192,23 @@ function Opcion3-ArchivosGrandes {
         # Validar entrada
         if ($letraDisco -match '^[A-Za-z]$') {
             $letraDisco = $letraDisco.ToUpper()
-            $rutaDisco = "$letraDisco`:\"
+            $rutaDisco = $letraDisco + ":\"
             
             if (Test-Path $rutaDisco) {
                 Write-Host ""
-                Write-Host "Buscando archivos más grandes en $rutaDisco..." -ForegroundColor Yellow
-                Write-Host "Este proceso puede tardar varios minutos dependiendo del tamaño del disco..." -ForegroundColor Gray
+                Write-Host "Buscando archivos mas grandes en $rutaDisco..." -ForegroundColor Yellow
+                Write-Host "Este proceso puede tardar varios minutos..." -ForegroundColor Gray
                 Write-Host ""
                 
-                # Buscar archivos y ordenar por tamaño
+                # Buscar archivos y ordenar por tamano
                 $archivosGrandes = Get-ChildItem -Path $rutaDisco -Recurse -File -ErrorAction SilentlyContinue | 
                     Sort-Object Length -Descending | 
                     Select-Object -First 10
                 
                 if ($archivosGrandes.Count -gt 0) {
-                    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Cyan
-                    Write-Host "TOP 10 ARCHIVOS MÁS GRANDES EN $rutaDisco" -ForegroundColor Cyan
-                    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+                    Write-Host "================================================================" -ForegroundColor Cyan
+                    Write-Host "TOP 10 ARCHIVOS MAS GRANDES EN $rutaDisco" -ForegroundColor Cyan
+                    Write-Host "================================================================" -ForegroundColor Cyan
                     Write-Host ""
                     
                     $contador = 1
@@ -217,11 +217,10 @@ function Opcion3-ArchivosGrandes {
                         $tamanoMB = [math]::Round($tamanoBytes / 1MB, 2)
                         $tamanoGB = [math]::Round($tamanoBytes / 1GB, 2)
                         
-                        Write-Host "[$contador] " -ForegroundColor Yellow -NoNewline
-                        Write-Host "$($archivo.FullName)" -ForegroundColor White
-                        Write-Host "    Tamaño: " -ForegroundColor Gray -NoNewline
-                        Write-Host "{0:N0} bytes" -f $tamanoBytes -ForegroundColor Cyan -NoNewline
-                        Write-Host " ($tamanoMB MB / $tamanoGB GB)" -ForegroundColor Green
+                        Write-Host "[$contador] $($archivo.FullName)" -ForegroundColor White
+                        Write-Host "    Tamano: $tamanoBytes bytes" -ForegroundColor Cyan
+                        Write-Host "            $tamanoMB MB" -ForegroundColor Green
+                        Write-Host "            $tamanoGB GB" -ForegroundColor Green
                         Write-Host ""
                         
                         $contador++
@@ -232,15 +231,15 @@ function Opcion3-ArchivosGrandes {
                 
             } else {
                 Write-Host ""
-                Write-Host "ERROR: El disco $rutaDisco no existe o no está accesible." -ForegroundColor Red
+                Write-Host "ERROR: El disco $rutaDisco no existe o no esta accesible." -ForegroundColor Red
             }
         } else {
             Write-Host ""
-            Write-Host "ERROR: Entrada inválida. Debe ingresar una letra de disco (A-Z)." -ForegroundColor Red
+            Write-Host "ERROR: Entrada invalida. Debe ingresar una letra de disco (A-Z)." -ForegroundColor Red
         }
         
     } catch {
-        Write-Host "ERROR: No se pudo completar la búsqueda." -ForegroundColor Red
+        Write-Host "ERROR: No se pudo completar la busqueda." -ForegroundColor Red
         Write-Host "Detalle: $($_.Exception.Message)" -ForegroundColor Red
     }
     
@@ -249,18 +248,18 @@ function Opcion3-ArchivosGrandes {
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-#==============================================================================
-# OPCIÓN 4: MEMORIA RAM Y SWAP
-#==============================================================================
+# ==============================================================================
+# OPCION 4: MEMORIA RAM Y SWAP
+# ==============================================================================
 function Opcion4-Memoria {
     Clear-Host
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Green
-    Write-Host "  OPCIÓN 4: MEMORIA RAM Y SWAP (PAGEFILE)" -ForegroundColor Green
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Green
+    Write-Host "================================================================" -ForegroundColor Green
+    Write-Host "  OPCION 4: MEMORIA RAM Y SWAP (PAGEFILE)" -ForegroundColor Green
+    Write-Host "================================================================" -ForegroundColor Green
     Write-Host ""
     
     try {
-        Write-Host "Obteniendo información de memoria..." -ForegroundColor Yellow
+        Write-Host "Obteniendo informacion de memoria..." -ForegroundColor Yellow
         Write-Host ""
         
         # ============== MEMORIA RAM ==============
@@ -274,22 +273,20 @@ function Opcion4-Memoria {
         $porcentajeLibreRAM = [math]::Round(($memoriaLibreBytes / $memoriaTotalBytes) * 100, 2)
         $porcentajeUsadoRAM = [math]::Round(($memoriaUsadaBytes / $memoriaTotalBytes) * 100, 2)
         
-        Write-Host "╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-        Write-Host "║                    MEMORIA RAM                            ║" -ForegroundColor Cyan
-        Write-Host "╚═══════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+        Write-Host "================================================================" -ForegroundColor Cyan
+        Write-Host "                    MEMORIA RAM                                 " -ForegroundColor Cyan
+        Write-Host "================================================================" -ForegroundColor Cyan
         Write-Host ""
-        Write-Host "Memoria Total:      " -NoNewline -ForegroundColor White
-        Write-Host "{0:N0} bytes" -f $memoriaTotalBytes -ForegroundColor Yellow -NoNewline
-        Write-Host " ($([math]::Round($memoriaTotalBytes / 1GB, 2)) GB)" -ForegroundColor Green
-        
-        Write-Host "Memoria Usada:      " -NoNewline -ForegroundColor White
-        Write-Host "{0:N0} bytes" -f $memoriaUsadaBytes -ForegroundColor Yellow -NoNewline
-        Write-Host " ($([math]::Round($memoriaUsadaBytes / 1GB, 2)) GB) - $porcentajeUsadoRAM%" -ForegroundColor Red
-        
-        Write-Host "Memoria Libre:      " -NoNewline -ForegroundColor White
-        Write-Host "{0:N0} bytes" -f $memoriaLibreBytes -ForegroundColor Yellow -NoNewline
-        Write-Host " ($([math]::Round($memoriaLibreBytes / 1GB, 2)) GB) - $porcentajeLibreRAM%" -ForegroundColor Green
-        
+        Write-Host "Memoria Total:  $memoriaTotalBytes bytes" -ForegroundColor White
+        Write-Host "                $([math]::Round($memoriaTotalBytes / 1GB, 2)) GB" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "Memoria Usada:  $memoriaUsadaBytes bytes" -ForegroundColor White
+        Write-Host "                $([math]::Round($memoriaUsadaBytes / 1GB, 2)) GB" -ForegroundColor Red
+        Write-Host "                $porcentajeUsadoRAM%" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "Memoria Libre:  $memoriaLibreBytes bytes" -ForegroundColor White
+        Write-Host "                $([math]::Round($memoriaLibreBytes / 1GB, 2)) GB" -ForegroundColor Green
+        Write-Host "                $porcentajeLibreRAM%" -ForegroundColor Green
         Write-Host ""
         
         # ============== SWAP / PAGEFILE ==============
@@ -311,35 +308,33 @@ function Opcion4-Memoria {
                 0 
             }
             
-            Write-Host "╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-            Write-Host "║                 SWAP (ARCHIVO DE PAGINACIÓN)              ║" -ForegroundColor Cyan
-            Write-Host "╚═══════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+            Write-Host "================================================================" -ForegroundColor Cyan
+            Write-Host "                 SWAP (ARCHIVO DE PAGINACION)                   " -ForegroundColor Cyan
+            Write-Host "================================================================" -ForegroundColor Cyan
             Write-Host ""
-            Write-Host "Ubicación:          " -NoNewline -ForegroundColor White
-            Write-Host "$($pageFile.Name)" -ForegroundColor Cyan
-            
-            Write-Host "Swap Total:         " -NoNewline -ForegroundColor White
-            Write-Host "{0:N0} bytes" -f $swapTotalBytes -ForegroundColor Yellow -NoNewline
-            Write-Host " ($([math]::Round($swapTotalBytes / 1GB, 2)) GB)" -ForegroundColor Green
-            
-            Write-Host "Swap en Uso:        " -NoNewline -ForegroundColor White
-            Write-Host "{0:N0} bytes" -f $swapUsadoBytes -ForegroundColor Yellow -NoNewline
-            Write-Host " ($([math]::Round($swapUsadoBytes / 1GB, 2)) GB) - $porcentajeUsadoSwap%" -ForegroundColor Red
-            
-            Write-Host "Swap Libre:         " -NoNewline -ForegroundColor White
-            Write-Host "{0:N0} bytes" -f $swapLibreBytes -ForegroundColor Yellow -NoNewline
-            Write-Host " ($([math]::Round($swapLibreBytes / 1GB, 2)) GB) - $porcentajeLibreSwap%" -ForegroundColor Green
+            Write-Host "Ubicacion:      $($pageFile.Name)" -ForegroundColor Cyan
+            Write-Host ""
+            Write-Host "Swap Total:     $swapTotalBytes bytes" -ForegroundColor White
+            Write-Host "                $([math]::Round($swapTotalBytes / 1GB, 2)) GB" -ForegroundColor Green
+            Write-Host ""
+            Write-Host "Swap en Uso:    $swapUsadoBytes bytes" -ForegroundColor White
+            Write-Host "                $([math]::Round($swapUsadoBytes / 1GB, 2)) GB" -ForegroundColor Red
+            Write-Host "                $porcentajeUsadoSwap%" -ForegroundColor Red
+            Write-Host ""
+            Write-Host "Swap Libre:     $swapLibreBytes bytes" -ForegroundColor White
+            Write-Host "                $([math]::Round($swapLibreBytes / 1GB, 2)) GB" -ForegroundColor Green
+            Write-Host "                $porcentajeLibreSwap%" -ForegroundColor Green
             
         } else {
-            Write-Host "╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-            Write-Host "║                 SWAP (ARCHIVO DE PAGINACIÓN)              ║" -ForegroundColor Cyan
-            Write-Host "╚═══════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+            Write-Host "================================================================" -ForegroundColor Cyan
+            Write-Host "                 SWAP (ARCHIVO DE PAGINACION)                   " -ForegroundColor Cyan
+            Write-Host "================================================================" -ForegroundColor Cyan
             Write-Host ""
-            Write-Host "No se detectó archivo de paginación (swap) configurado." -ForegroundColor Yellow
+            Write-Host "No se detecto archivo de paginacion (swap) configurado." -ForegroundColor Yellow
         }
         
     } catch {
-        Write-Host "ERROR: No se pudo obtener información de memoria." -ForegroundColor Red
+        Write-Host "ERROR: No se pudo obtener informacion de memoria." -ForegroundColor Red
         Write-Host "Detalle: $($_.Exception.Message)" -ForegroundColor Red
     }
     
@@ -348,14 +343,14 @@ function Opcion4-Memoria {
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-#==============================================================================
-# OPCIÓN 5: BACKUP A USB CON CATÁLOGO
-#==============================================================================
+# ==============================================================================
+# OPCION 5: BACKUP A USB CON CATALOGO
+# ==============================================================================
 function Opcion5-Backup {
     Clear-Host
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Green
-    Write-Host "  OPCIÓN 5: BACKUP DE DIRECTORIO A USB" -ForegroundColor Green
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Green
+    Write-Host "================================================================" -ForegroundColor Green
+    Write-Host "  OPCION 5: BACKUP DE DIRECTORIO A USB" -ForegroundColor Green
+    Write-Host "================================================================" -ForegroundColor Green
     Write-Host ""
     
     try {
@@ -371,7 +366,7 @@ function Opcion5-Backup {
             Write-Host "ADVERTENCIA: No se detectaron unidades USB conectadas." -ForegroundColor Yellow
             Write-Host "Por favor, conecte una unidad USB e intente nuevamente." -ForegroundColor Yellow
             Write-Host ""
-            Write-Host "¿Desea continuar de todas formas? (S/N): " -ForegroundColor Yellow -NoNewline
+            Write-Host "Desea continuar de todas formas? (S/N): " -ForegroundColor Yellow -NoNewline
             $continuar = Read-Host
             if ($continuar -ne 'S' -and $continuar -ne 's') {
                 return
@@ -419,38 +414,37 @@ function Opcion5-Backup {
             New-Item -Path $directorioDestino -ItemType Directory -Force | Out-Null
         }
         
-        # Confirmar operación
+        # Confirmar operacion
         Write-Host ""
-        Write-Host "╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Yellow
-        Write-Host "║                   CONFIRMACIÓN DE BACKUP                  ║" -ForegroundColor Yellow
-        Write-Host "╚═══════════════════════════════════════════════════════════╝" -ForegroundColor Yellow
+        Write-Host "================================================================" -ForegroundColor Yellow
+        Write-Host "                   CONFIRMACION DE BACKUP                       " -ForegroundColor Yellow
+        Write-Host "================================================================" -ForegroundColor Yellow
         Write-Host ""
-        Write-Host "Origen:  " -NoNewline -ForegroundColor White
-        Write-Host "$directorioOrigen" -ForegroundColor Cyan
-        Write-Host "Destino: " -NoNewline -ForegroundColor White
-        Write-Host "$directorioDestino" -ForegroundColor Cyan
+        Write-Host "Origen:  $directorioOrigen" -ForegroundColor Cyan
+        Write-Host "Destino: $directorioDestino" -ForegroundColor Cyan
         Write-Host ""
-        Write-Host "¿Desea continuar con el backup? (S/N): " -ForegroundColor Yellow -NoNewline
+        Write-Host "Desea continuar con el backup? (S/N): " -ForegroundColor Yellow -NoNewline
         $confirmar = Read-Host
         
         if ($confirmar -ne 'S' -and $confirmar -ne 's') {
             Write-Host ""
-            Write-Host "Operación cancelada por el usuario." -ForegroundColor Yellow
+            Write-Host "Operacion cancelada por el usuario." -ForegroundColor Yellow
             return
         }
         
         # Realizar backup
         Write-Host ""
-        Write-Host "╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Green
-        Write-Host "║              INICIANDO PROCESO DE BACKUP...               ║" -ForegroundColor Green
-        Write-Host "╚═══════════════════════════════════════════════════════════╝" -ForegroundColor Green
+        Write-Host "================================================================" -ForegroundColor Green
+        Write-Host "              INICIANDO PROCESO DE BACKUP...                    " -ForegroundColor Green
+        Write-Host "================================================================" -ForegroundColor Green
         Write-Host ""
         
         $inicioBackup = Get-Date
         Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Copiando archivos..." -ForegroundColor Yellow
         
         # Copiar archivos
-        Copy-Item -Path "$directorioOrigen\*" -Destination $directorioDestino -Recurse -Force -ErrorAction SilentlyContinue
+        $origenPath = Join-Path $directorioOrigen "*"
+        Copy-Item -Path $origenPath -Destination $directorioDestino -Recurse -Force -ErrorAction SilentlyContinue
         
         $finBackup = Get-Date
         $duracion = ($finBackup - $inicioBackup).TotalSeconds
@@ -458,8 +452,8 @@ function Opcion5-Backup {
         Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Copia completada en $([math]::Round($duracion, 2)) segundos." -ForegroundColor Green
         Write-Host ""
         
-        # Generar catálogo
-        Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Generando catálogo de archivos..." -ForegroundColor Yellow
+        # Generar catalogo
+        Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Generando catalogo de archivos..." -ForegroundColor Yellow
         
         $catalogoPath = Join-Path $directorioDestino "catalogo_backup.txt"
         $catalogoCSVPath = Join-Path $directorioDestino "catalogo_backup.csv"
@@ -469,76 +463,77 @@ function Opcion5-Backup {
             $_.Name -ne "catalogo_backup.txt" -and $_.Name -ne "catalogo_backup.csv" 
         }
         
-        # Crear catálogo en formato texto
+        # Crear catalogo en formato texto
         $catalogoContenido = @()
-        $catalogoContenido += "═══════════════════════════════════════════════════════════════"
-        $catalogoContenido += "        CATÁLOGO DE BACKUP - $(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')"
-        $catalogoContenido += "═══════════════════════════════════════════════════════════════"
+        $catalogoContenido += "================================================================"
+        $catalogoContenido += "        CATALOGO DE BACKUP - $(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')"
+        $catalogoContenido += "================================================================"
         $catalogoContenido += ""
         $catalogoContenido += "Directorio origen:  $directorioOrigen"
         $catalogoContenido += "Directorio destino: $directorioDestino"
         $catalogoContenido += "Fecha de backup:    $(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')"
         $catalogoContenido += "Total de archivos:  $($archivosBackup.Count)"
         $catalogoContenido += ""
-        $catalogoContenido += "═══════════════════════════════════════════════════════════════"
+        $catalogoContenido += "================================================================"
         $catalogoContenido += "LISTA DE ARCHIVOS:"
-        $catalogoContenido += "═══════════════════════════════════════════════════════════════"
+        $catalogoContenido += "================================================================"
         $catalogoContenido += ""
         
-        # Crear catálogo CSV
+        # Crear catalogo CSV
         $catalogoCSV = @()
         
         foreach ($archivo in $archivosBackup) {
             # Obtener ruta relativa
             $rutaRelativa = $archivo.FullName.Replace($directorioDestino, "").TrimStart('\')
             
-            # Agregar a catálogo de texto
+            # Agregar a catalogo de texto
             $catalogoContenido += "Archivo: $rutaRelativa"
-            $catalogoContenido += "  Tamaño: {0:N0} bytes ({1} MB)" -f $archivo.Length, ([math]::Round($archivo.Length / 1MB, 2))
-            $catalogoContenido += "  Última modificación: $($archivo.LastWriteTime.ToString('dd/MM/yyyy HH:mm:ss'))"
+            $catalogoContenido += "  Tamano: $($archivo.Length) bytes"
+            $catalogoContenido += "  Tamano: $([math]::Round($archivo.Length / 1MB, 2)) MB"
+            $catalogoContenido += "  Ultima modificacion: $($archivo.LastWriteTime.ToString('dd/MM/yyyy HH:mm:ss'))"
             $catalogoContenido += ""
             
-            # Agregar a catálogo CSV
+            # Agregar a catalogo CSV
             $catalogoCSV += [PSCustomObject]@{
                 'Nombre' = $archivo.Name
-                'Ruta Relativa' = $rutaRelativa
-                'Tamaño (Bytes)' = $archivo.Length
-                'Tamaño (MB)' = [math]::Round($archivo.Length / 1MB, 2)
-                'Fecha Modificación' = $archivo.LastWriteTime.ToString('dd/MM/yyyy HH:mm:ss')
-                'Fecha Creación' = $archivo.CreationTime.ToString('dd/MM/yyyy HH:mm:ss')
+                'Ruta_Relativa' = $rutaRelativa
+                'Tamano_Bytes' = $archivo.Length
+                'Tamano_MB' = [math]::Round($archivo.Length / 1MB, 2)
+                'Fecha_Modificacion' = $archivo.LastWriteTime.ToString('dd/MM/yyyy HH:mm:ss')
+                'Fecha_Creacion' = $archivo.CreationTime.ToString('dd/MM/yyyy HH:mm:ss')
             }
         }
         
         # Agregar resumen al final
         $tamanoTotal = ($archivosBackup | Measure-Object -Property Length -Sum).Sum
-        $catalogoContenido += "═══════════════════════════════════════════════════════════════"
+        $catalogoContenido += "================================================================"
         $catalogoContenido += "RESUMEN:"
-        $catalogoContenido += "═══════════════════════════════════════════════════════════════"
+        $catalogoContenido += "================================================================"
         $catalogoContenido += "Total de archivos: $($archivosBackup.Count)"
-        $catalogoContenido += "Tamaño total: {0:N0} bytes ({1} MB / {2} GB)" -f $tamanoTotal, ([math]::Round($tamanoTotal / 1MB, 2)), ([math]::Round($tamanoTotal / 1GB, 2))
-        $catalogoContenido += "Duración del backup: $([math]::Round($duracion, 2)) segundos"
+        $catalogoContenido += "Tamano total: $tamanoTotal bytes"
+        $catalogoContenido += "Tamano total: $([math]::Round($tamanoTotal / 1MB, 2)) MB"
+        $catalogoContenido += "Tamano total: $([math]::Round($tamanoTotal / 1GB, 2)) GB"
+        $catalogoContenido += "Duracion del backup: $([math]::Round($duracion, 2)) segundos"
         $catalogoContenido += ""
         
-        # Guardar catálogos
+        # Guardar catalogos
         $catalogoContenido | Out-File -FilePath $catalogoPath -Encoding UTF8
         $catalogoCSV | Export-Csv -Path $catalogoCSVPath -NoTypeInformation -Encoding UTF8
         
-        Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Catálogo generado exitosamente." -ForegroundColor Green
+        Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Catalogo generado exitosamente." -ForegroundColor Green
         Write-Host ""
         
         # Mostrar resumen
-        Write-Host "╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-        Write-Host "║                  BACKUP COMPLETADO                        ║" -ForegroundColor Cyan
-        Write-Host "╚═══════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+        Write-Host "================================================================" -ForegroundColor Cyan
+        Write-Host "                  BACKUP COMPLETADO                             " -ForegroundColor Cyan
+        Write-Host "================================================================" -ForegroundColor Cyan
         Write-Host ""
-        Write-Host "Archivos copiados:  " -NoNewline -ForegroundColor White
-        Write-Host "$($archivosBackup.Count)" -ForegroundColor Green
-        Write-Host "Tamaño total:       " -NoNewline -ForegroundColor White
-        Write-Host "{0:N0} bytes ({1} MB)" -f $tamanoTotal, ([math]::Round($tamanoTotal / 1MB, 2)) -ForegroundColor Green
-        Write-Host "Duración:           " -NoNewline -ForegroundColor White
-        Write-Host "$([math]::Round($duracion, 2)) segundos" -ForegroundColor Green
+        Write-Host "Archivos copiados:  $($archivosBackup.Count)" -ForegroundColor Green
+        Write-Host "Tamano total:       $tamanoTotal bytes" -ForegroundColor Green
+        Write-Host "Tamano total:       $([math]::Round($tamanoTotal / 1MB, 2)) MB" -ForegroundColor Green
+        Write-Host "Duracion:           $([math]::Round($duracion, 2)) segundos" -ForegroundColor Green
         Write-Host ""
-        Write-Host "Catálogos generados:" -ForegroundColor White
+        Write-Host "Catalogos generados:" -ForegroundColor White
         Write-Host "  - $catalogoPath" -ForegroundColor Cyan
         Write-Host "  - $catalogoCSVPath" -ForegroundColor Cyan
         
@@ -553,29 +548,29 @@ function Opcion5-Backup {
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-#==============================================================================
+# ==============================================================================
 # PROGRAMA PRINCIPAL
-#==============================================================================
+# ==============================================================================
 
-# Verificar permisos de administrador (recomendado para algunas operaciones)
+# Verificar permisos de administrador
 $esAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 if (-not $esAdmin) {
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Yellow
-    Write-Host "  ADVERTENCIA: No se está ejecutando como administrador" -ForegroundColor Yellow
-    Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Yellow
+    Write-Host "================================================================" -ForegroundColor Yellow
+    Write-Host "  ADVERTENCIA: No se esta ejecutando como administrador        " -ForegroundColor Yellow
+    Write-Host "================================================================" -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "Algunas funciones pueden no estar disponibles o mostrar información limitada." -ForegroundColor Yellow
+    Write-Host "Algunas funciones pueden no estar disponibles." -ForegroundColor Yellow
     Write-Host "Para mejor funcionalidad, ejecute PowerShell como administrador." -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "Presione cualquier tecla para continuar de todas formas..." -ForegroundColor Gray
+    Write-Host "Presione cualquier tecla para continuar..." -ForegroundColor Gray
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-# Bucle principal del menú
+# Bucle principal del menu
 do {
     Mostrar-Menu
-    Write-Host "Seleccione una opción [0-5]: " -ForegroundColor White -NoNewline
+    Write-Host "Seleccione una opcion [0-5]: " -ForegroundColor White -NoNewline
     $opcion = Read-Host
     
     switch ($opcion) {
@@ -587,19 +582,18 @@ do {
         '0' { 
             Clear-Host
             Write-Host ""
-            Write-Host "╔════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-            Write-Host "║     Gracias por usar la Herramienta de Administración         ║" -ForegroundColor Cyan
-            Write-Host "║                   ¡Hasta pronto!                               ║" -ForegroundColor Cyan
-            Write-Host "╚════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+            Write-Host "================================================================" -ForegroundColor Cyan
+            Write-Host "     Gracias por usar la Herramienta de Administracion         " -ForegroundColor Cyan
+            Write-Host "                   Hasta pronto!                                " -ForegroundColor Cyan
+            Write-Host "================================================================" -ForegroundColor Cyan
             Write-Host ""
             exit 
         }
         default { 
             Write-Host ""
-            Write-Host "Opción inválida. Por favor seleccione una opción entre 0 y 5." -ForegroundColor Red
+            Write-Host "Opcion invalida. Seleccione una opcion entre 0 y 5." -ForegroundColor Red
             Start-Sleep -Seconds 2
         }
     }
     
 } while ($true)
-
