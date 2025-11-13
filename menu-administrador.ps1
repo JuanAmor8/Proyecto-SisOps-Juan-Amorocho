@@ -118,17 +118,17 @@ function Opcion2-Discos {
         $resultados = @()
         
         foreach ($vol in $volumenes) {
-            $tamañoBytes = $vol.Size
+            $tamanoBytes = $vol.Size
             $libreBytes = $vol.SizeRemaining
-            $usadoBytes = $tamañoBytes - $libreBytes
-            $porcentajeLibre = [math]::Round(($libreBytes / $tamañoBytes) * 100, 2)
+            $usadoBytes = $tamanoBytes - $libreBytes
+            $porcentajeLibre = [math]::Round(($libreBytes / $tamanoBytes) * 100, 2)
             
             $resultados += [PSCustomObject]@{
                 'Disco' = "$($vol.DriveLetter):"
                 'Etiqueta' = if ($vol.FileSystemLabel) { $vol.FileSystemLabel } else { "Sin etiqueta" }
                 'Sistema de Archivos' = $vol.FileSystem
-                'Tamaño Total (Bytes)' = "{0:N0}" -f $tamañoBytes
-                'Tamaño Total (GB)' = [math]::Round($tamañoBytes / 1GB, 2)
+                'Tamaño Total (Bytes)' = "{0:N0}" -f $tamanoBytes
+                'Tamaño Total (GB)' = [math]::Round($tamanoBytes / 1GB, 2)
                 'Espacio Usado (Bytes)' = "{0:N0}" -f $usadoBytes
                 'Espacio Libre (Bytes)' = "{0:N0}" -f $libreBytes
                 'Espacio Libre (GB)' = [math]::Round($libreBytes / 1GB, 2)
@@ -213,15 +213,15 @@ function Opcion3-ArchivosGrandes {
                     
                     $contador = 1
                     foreach ($archivo in $archivosGrandes) {
-                        $tamañoBytes = $archivo.Length
-                        $tamañoMB = [math]::Round($tamañoBytes / 1MB, 2)
-                        $tamañoGB = [math]::Round($tamañoBytes / 1GB, 2)
+                        $tamanoBytes = $archivo.Length
+                        $tamanoMB = [math]::Round($tamanoBytes / 1MB, 2)
+                        $tamanoGB = [math]::Round($tamanoBytes / 1GB, 2)
                         
                         Write-Host "[$contador] " -ForegroundColor Yellow -NoNewline
                         Write-Host "$($archivo.FullName)" -ForegroundColor White
                         Write-Host "    Tamaño: " -ForegroundColor Gray -NoNewline
-                        Write-Host "{0:N0} bytes" -f $tamañoBytes -ForegroundColor Cyan -NoNewline
-                        Write-Host " ($tamañoMB MB / $tamañoGB GB)" -ForegroundColor Green
+                        Write-Host "{0:N0} bytes" -f $tamanoBytes -ForegroundColor Cyan -NoNewline
+                        Write-Host " ($tamanoMB MB / $tamanoGB GB)" -ForegroundColor Green
                         Write-Host ""
                         
                         $contador++
@@ -510,12 +510,12 @@ function Opcion5-Backup {
         }
         
         # Agregar resumen al final
-        $tamañoTotal = ($archivosBackup | Measure-Object -Property Length -Sum).Sum
+        $tamanoTotal = ($archivosBackup | Measure-Object -Property Length -Sum).Sum
         $catalogoContenido += "═══════════════════════════════════════════════════════════════"
         $catalogoContenido += "RESUMEN:"
         $catalogoContenido += "═══════════════════════════════════════════════════════════════"
         $catalogoContenido += "Total de archivos: $($archivosBackup.Count)"
-        $catalogoContenido += "Tamaño total: {0:N0} bytes ({1} MB / {2} GB)" -f $tamañoTotal, ([math]::Round($tamañoTotal / 1MB, 2)), ([math]::Round($tamañoTotal / 1GB, 2))
+        $catalogoContenido += "Tamaño total: {0:N0} bytes ({1} MB / {2} GB)" -f $tamanoTotal, ([math]::Round($tamanoTotal / 1MB, 2)), ([math]::Round($tamanoTotal / 1GB, 2))
         $catalogoContenido += "Duración del backup: $([math]::Round($duracion, 2)) segundos"
         $catalogoContenido += ""
         
@@ -534,7 +534,7 @@ function Opcion5-Backup {
         Write-Host "Archivos copiados:  " -NoNewline -ForegroundColor White
         Write-Host "$($archivosBackup.Count)" -ForegroundColor Green
         Write-Host "Tamaño total:       " -NoNewline -ForegroundColor White
-        Write-Host "{0:N0} bytes ({1} MB)" -f $tamañoTotal, ([math]::Round($tamañoTotal / 1MB, 2)) -ForegroundColor Green
+        Write-Host "{0:N0} bytes ({1} MB)" -f $tamanoTotal, ([math]::Round($tamanoTotal / 1MB, 2)) -ForegroundColor Green
         Write-Host "Duración:           " -NoNewline -ForegroundColor White
         Write-Host "$([math]::Round($duracion, 2)) segundos" -ForegroundColor Green
         Write-Host ""
