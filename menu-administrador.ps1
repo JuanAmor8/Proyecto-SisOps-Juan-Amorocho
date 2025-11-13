@@ -1,7 +1,7 @@
 # ==============================================================================
 # HERRAMIENTA DE ADMINISTRACION DE DATA CENTER - PowerShell
 # Sistema Operativo: Windows
-# Autor: Juan Amorocho
+# Autor: Juan Camilo Amorocho Murillo
 # Descripcion: Menu interactivo con 5 opciones para administracion de servidores
 # ==============================================================================
 

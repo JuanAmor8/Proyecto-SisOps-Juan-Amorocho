@@ -1,0 +1,21 @@
+# Archivos temporales de Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Archivos temporales de macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Archivos de backup generados por los scripts
+catalogo_backup.txt
+catalogo_backup.csv
+
+# Archivos de log
+*.log
+
+# Directorios de backup de prueba
+backup_test/
+test_backup/
+
